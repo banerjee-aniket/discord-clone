@@ -1,28 +1,18 @@
-import { currentUser, redirectToSignIn } from '@clerk/nextjs';
-
 import { db } from '@/lib/db';
 
 export const initialProfile = async () => {
-    const user = await currentUser();
-
-    if (!user) {
-        return redirectToSignIn();
-    }
-
-    const profile = await db.profile.findUnique({
-        where: {
-            userId: user.id,
-        },
-    });
+    // Get or create a default guest profile for public access
+    let profile = await db.profile.findFirst();
 
     if (profile) return profile;
 
+    // Create a default guest profile
     const newProfile = await db.profile.create({
         data: {
-            userId: user.id,
-            name: `${user.firstName} ${user.lastName}`,
-            imageUrl: user.imageUrl,
-            email: user.emailAddresses[0].emailAddress,
+            userId: 'guest-' + Date.now(),
+            name: 'Guest User',
+            imageUrl: '',
+            email: 'guest@connectsphere.local',
         },
     });
 

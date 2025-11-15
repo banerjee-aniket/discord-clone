@@ -1,16 +1,8 @@
-import { auth } from '@clerk/nextjs';
-
 import { db } from '@/lib/db';
 
 export const currentProfile = async () => {
-    const { userId } = auth();
-
-    if (!userId) return null;
-
-    const profile = await db.profile.findUnique({
-        where: {
-            userId,
-        },
-    });
+    // Without authentication, return a default public profile
+    // Users can be identified by session/connection in future implementation
+    const profile = await db.profile.findFirst();
     return profile;
 };
